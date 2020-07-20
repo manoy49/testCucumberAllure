@@ -25,12 +25,8 @@ allure {
     allureJavaVersion = '2.13.1'
 }
 
-//task report(type : Exec) {
-//    doLast {
-//        workingDir './build'
-//        if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows'))
-//            commandLine 'cmd', '/c', 'allure', 'generate', '--clean'
-//        else
-//            commandLine 'bash', '-c', 'allure', 'generate', '--clean'
-//    }
-//}
+test{
+    afterTest{
+        allureReport.generateAllureReport()
+    }
+}
