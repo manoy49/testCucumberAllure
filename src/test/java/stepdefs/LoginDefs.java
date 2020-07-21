@@ -16,7 +16,7 @@ public class LoginDefs {
 
     @Before
     public void setup(Scenario scenario) {
-        loginTest.setup(scenario);
+        loginTest.scenario = scenario;
     }
 
     @After

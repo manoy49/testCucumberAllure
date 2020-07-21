@@ -8,7 +8,7 @@ import utils.ReadAndWrite;
 
 public class LoginTest extends BaseTest {
     private WebDriver driver = null;
-    private Scenario scenario;
+    public  Scenario scenario;
     final String testDataLocation = System.getProperty("user.dir") +
             "\\src\\test\\resources\\" +
             this.getClass().getSimpleName() +
@@ -35,7 +35,7 @@ public class LoginTest extends BaseTest {
     @Step("User is at login page")
     public void userIsAtLoginPage(String... dataLocation) throws InterruptedException {
         String URL = ReadAndWrite.getProperty("url", dataLocation.length == 0 ? testDataLocation : dataLocation[0]);
-        if(driver == null)
+        if(null == driver)
             setup(this.scenario);
         driver.get(URL);
         Thread.sleep(5);

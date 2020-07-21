@@ -118,7 +118,19 @@ public class LeavePageTest extends BaseTest {
         submitXpath = submitXpath + type + "\"]";
         submitXpath = submitXpath + ReadAndWrite.getProperty("xpath-leave-list-submit", testDataLocation);
 
-        element = driver.findElement(By.xpath(submitXpath));
+        try {
+            element = driver.findElement(By.xpath(submitXpath));
+        } catch (Exception noSuchElementException) {
+            String year = ReadAndWrite.getProperty("from", testDataLocation);
+            year = year.split("/")[2];
+            element = driver.findElement(By.id("year"));
+            Select yearSelector = new Select(element);
+            yearSelector.selectByValue(year);
+            element = driver.findElement(By.xpath("//input[@value=\"Search\"]"));
+            element.click();
+            element = driver.findElement(By.xpath(submitXpath));
+
+        }
         element.click();
 
     }
