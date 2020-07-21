@@ -6,6 +6,9 @@ import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import tests.LoginTest;
 
 public class LoginDefs {
@@ -30,8 +33,8 @@ public class LoginDefs {
         }
     }
 
-    @When("^User try logging in with incorrect username and password$")
-    public void user_try_logging_in_with_incorrect_username_and_password() {
+    @When("^User try logging in with username and password$")
+    public void user_try_logging_in_with_username_and_password() {
         loginTest.userLoggingWithCreds();
     }
 
@@ -39,4 +42,5 @@ public class LoginDefs {
     public void user_is_redirected_back_to_login_page() {
        loginTest.userGetsRedirected();
     }
+
 }

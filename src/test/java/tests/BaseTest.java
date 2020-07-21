@@ -1,13 +1,16 @@
 package tests;
 
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.Scenario;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import utils.ReadAndWrite;
 
 public class BaseTest {
-    private WebDriver driver = null;
-
+    public  WebDriver driver = null;
     private final String basePath = System.getProperty("user.dir") + "\\src\\test\\resources\\drivers\\";
 
     private final static String FIREFOX_DRIVER = "geckodriver-v0.26.0-win64\\geckodriver.exe";
@@ -19,21 +22,28 @@ public class BaseTest {
         switch (browser) {
             case "FIREFOX" :
                 System.setProperty("webdriver.gecko.driver", basePath + FIREFOX_DRIVER);
-                driver = new FirefoxDriver();
+                driver =  driver == null ? new FirefoxDriver(): driver;
                 break;
             case "EDGE" :
                 System.setProperty("webdriver.edge.driver", basePath + EDGE_DRIVER);
-                driver = new EdgeDriver();
+                driver = driver == null ? new EdgeDriver(): driver;
                 break;
             default:
                 System.setProperty("webdriver.chrome.driver", basePath + CHROME_DRIVER);
-                driver = new ChromeDriver();
+                driver = driver == null ? new ChromeDriver(): driver;
         }
         return driver;
     }
 
     public void quit(WebDriver driver) {
-        driver.quit();
+        if (driver != null)
+            driver.quit();
     }
+
+//    @After
+//    public void tearDown() {
+//        if(BaseTest.driver != null)
+//            BaseTest.driver.quit();
+//    }
 
 }
