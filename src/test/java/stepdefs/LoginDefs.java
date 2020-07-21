@@ -19,11 +19,6 @@ public class LoginDefs {
         loginTest.scenario = scenario;
     }
 
-    @After
-    public void tearDown() {
-        loginTest.after();
-    }
-
     @Given("^User is on login page$")
     public void user_is_on_login_page() {
         try {

@@ -7,3 +7,4 @@ Feature: Leave Application feature
     And User submits the form
     Then User verify the details
     And Submit the leave application
+    And User logouts from the system

@@ -3,6 +3,7 @@ package stepdefs;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -17,11 +18,6 @@ public class LeaveApplicationDefs {
     @Before
     public void setup(Scenario scenario) {
         leavePageTest.setup(scenario);
-    }
-
-    @After
-    public void tearDown() {
-        leavePageTest.tearDown();
     }
 
     @Given("User is logged in")
@@ -63,5 +59,10 @@ public class LeaveApplicationDefs {
     @Then("Submit the leave application")
     public void submit_the_leave_application() {
         leavePageTest.submitApplication();
+    }
+
+    @And("User logouts from the system")
+    public void user_logouts_from_the_system() {
+        leavePageTest.logout();
     }
 }

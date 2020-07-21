@@ -10,7 +10,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import utils.ReadAndWrite;
 
 public class BaseTest {
-    public  WebDriver driver = null;
+    public static WebDriver driver = null;
     private final String basePath = System.getProperty("user.dir") + "\\src\\test\\resources\\drivers\\";
 
     private final static String FIREFOX_DRIVER = "geckodriver-v0.26.0-win64\\geckodriver.exe";
@@ -38,12 +38,12 @@ public class BaseTest {
     public void quit(WebDriver driver) {
         if (driver != null)
             driver.quit();
+        BaseTest.driver.quit();
     }
 
-//    @After
-//    public void tearDown() {
-//        if(BaseTest.driver != null)
-//            BaseTest.driver.quit();
-//    }
+    public void tearDown() {
+        if(BaseTest.driver != null)
+            BaseTest.driver.quit();
+    }
 
 }

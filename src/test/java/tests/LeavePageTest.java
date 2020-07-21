@@ -135,6 +135,11 @@ public class LeavePageTest extends BaseTest {
 
     }
 
+    @Step("User log out")
+    public void logout() {
+        WebElement element = driver.findElement(By.xpath(ReadAndWrite.getProperty("xpath-logout", testDataLocation)));
+        element.click();
+    }
 
 
     private void datePicker(String identifier, String identifierValue, String selectorId,  String date) {
