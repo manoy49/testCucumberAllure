@@ -4,7 +4,7 @@ import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
 import org.junit.AfterClass;
 import org.junit.runner.RunWith;
-import tests.BaseTest;
+import pages.BasePage;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = {"classpath:features"},
@@ -13,6 +13,6 @@ public class TestRunner {
 
     @AfterClass
     public static void teardown() {
-        BaseTest.driver.quit();
+        BasePage.driver.quit();
     }
 }

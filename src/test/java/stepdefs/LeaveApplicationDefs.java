@@ -1,5 +1,9 @@
 package stepdefs;
 
+import entity.Employee;
+import entity.LeaveApplication;
+import entity.TestConfig;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -7,62 +11,78 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import tests.LeavePageTest;
-import tests.LoginTest;
+import pages.LeavePage;
+import pages.LoginPage;
+
+import java.util.List;
 
 public class LeaveApplicationDefs {
+    public Employee employee;
+    public LeaveApplication leaveApplication;
+    public TestConfig testConfig;
 
-    LeavePageTest leavePageTest = new LeavePageTest();
-    LoginTest loginTest = new LoginTest();
+    LeavePage leavePage = new LeavePage();
+    LoginPage loginPage = new LoginPage();
 
     @Before
     public void setup(Scenario scenario) {
-        leavePageTest.setup(scenario);
+        leavePage.setScenario(scenario);
     }
 
-    @Given("User is logged in")
-    public void user_is_logged_in() {
+    @Given("Leave Test Initialization")
+    public void leave_test_initialization(DataTable dataTable) {
+        List<String> data = dataTable.cells().get(1);
+        testConfig = new TestConfig.TestConfigBuilder(data.get(0), data.get(1)).build();
+        leavePage.setup(testConfig);
+        loginPage.setTestConfig(testConfig);
+    }
+
+    @Given("Employee is logged in the app")
+    public void user_is_logged_in(DataTable dataTable) {
         try {
-            loginTest.setDriver(leavePageTest.getDriver());
-            loginTest.userIsAtLoginPage(leavePageTest.getLocation());
-            loginTest.userLoggingWithCreds(leavePageTest.getLocation());
+            loginPage.setDriver(leavePage.getDriver());
+            loginPage.userIsAtLoginPage();
+
+            List<String> data = dataTable.cells().get(1);
+            employee =  new Employee.EmployeeBuilder(data.get(0), data.get(1)).build();
+
+            loginPage.userLoggingWithCreds(employee);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    @Then("User goes to leave application page")
+    @Then("Employee is on leave page")
     public void user_goes_to_leave_application_page() {
-        leavePageTest.userIsAtLeavePage();
+        leavePage.userIsAtLeavePage();
     }
 
-    @When("User clicks on new button")
-    public void user_clicks_on_new_button() {
-        leavePageTest.userClicksOnNewLeaveButton();
+    @When("Employee tries creating new leave request")
+    public void user_fill_the_application_form(DataTable dataTable) {
+        List<String> data = dataTable.cells().get(1);
+        leaveApplication = new LeaveApplication.
+                LeaveApplicationBuilder(data.get(0), data.get(1), data.get(2), data.get(3)).build();
+        leavePage.userClicksOnNewLeaveButton();
+        leavePage.UserFillUpApplicationForm(leaveApplication);
     }
 
-    @When("User fill the application form")
-    public void user_fill_the_application_form() {
-        leavePageTest.UserFillUpApplicationForm();
-    }
-
-    @When("User submits the form")
+    @When("Employee submits leave request")
     public void user_submits_the_form() {
-       leavePageTest.clickSubmit();
+       leavePage.clickSubmit();
     }
 
-    @Then("User verify the details")
+    @Then("Employee verify leave details")
     public void user_verify_the_details() {
-        leavePageTest.verifyDetail();
+        leavePage.verifyDetail(leaveApplication);
     }
 
-    @Then("Submit the leave application")
+    @Then("Employee submits the final request")
     public void submit_the_leave_application() {
-        leavePageTest.submitApplication();
+        leavePage.submitApplication(leaveApplication);
     }
 
-    @And("User logouts from the system")
+    @And("Employee logs out from app")
     public void user_logouts_from_the_system() {
-        leavePageTest.logout();
+        leavePage.logout();
     }
 }

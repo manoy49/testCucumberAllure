@@ -1,41 +1,64 @@
 package stepdefs;
 
-import io.cucumber.java.After;
+import entity.Employee;
+import entity.TestConfig;
+import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import tests.LoginTest;
+import pages.LoginPage;
+
+import java.util.List;
+import java.util.Map;
 
 public class LoginDefs {
-    LoginTest loginTest = new LoginTest();
+    LoginPage loginPage = new LoginPage();
+    public Employee employee;
+    public TestConfig testConfig;
 
     @Before
     public void setup(Scenario scenario) {
-        loginTest.scenario = scenario;
+        loginPage.scenario = scenario;
     }
 
-    @Given("^User is on login page$")
+    @Given("Login Test Initialization")
+    public void login_test_initialization(DataTable dataTable) {
+        List<String> data = dataTable.cells().get(1);
+        testConfig = new TestConfig.TestConfigBuilder(data.get(0), data.get(1)).build();
+        loginPage.setup(testConfig);
+    }
+
+    @Given("^Employee is on login page$")
     public void user_is_on_login_page() {
         try {
-            loginTest.userIsAtLoginPage();
+            loginPage.userIsAtLoginPage();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    @When("^User try logging in with username and password$")
-    public void user_try_logging_in_with_username_and_password() {
-        loginTest.userLoggingWithCreds();
+    @When("^Employee tries logging in$")
+    public void user_tries_logging_in(DataTable dataTable) {
+        List<String> data = dataTable.cells().get(1);
+        employee =  new Employee.EmployeeBuilder(data.get(0), data.get(1)).build();
+        loginPage.userLoggingWithCreds(employee);
     }
 
-    @Then("^User is redirected back to login page$")
+    @Then("^Employee is logged in$")
+    public void user_is_logged_in() {
+        loginPage.userGetsLoggedIn(employee);
+    }
+
+    @Then("^Employee is redirected back to login page$")
     public void user_is_redirected_back_to_login_page() {
-       loginTest.userGetsRedirected();
+       loginPage.userGetsRedirected();
     }
 
+    @And("Employee logs out")
+    public void employee_logs_out() {
+        loginPage.logout();
+    }
 }
