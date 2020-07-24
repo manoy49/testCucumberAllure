@@ -11,8 +11,10 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import pages.BasePage;
 import pages.LeavePage;
 import pages.LoginPage;
+import utils.ReadAndWrite;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class LeaveApplicationDefs {
     public TestConfig testConfig;
 
     LeavePage leavePage = new LeavePage();
-    LoginPage loginPage = new LoginPage();
+    LoginPage loginPage;
 
     @Before
     public void setup(Scenario scenario) {
@@ -32,8 +34,10 @@ public class LeaveApplicationDefs {
     @Given("Leave Test Initialization")
     public void leave_test_initialization(DataTable dataTable) {
         List<String> data = dataTable.cells().get(1);
-        testConfig = new TestConfig.TestConfigBuilder(data.get(0), data.get(1)).build();
+        String url = ReadAndWrite.getProperty("url", BasePage.CONFIG_LOCATION);
+        testConfig = new TestConfig.TestConfigBuilder(data.get(0), url).build();
         leavePage.setup(testConfig);
+        loginPage = new LoginPage(leavePage.getDriver());
         loginPage.setTestConfig(testConfig);
     }
 

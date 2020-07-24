@@ -1,11 +1,30 @@
 package entity;
 
+import java.util.Objects;
+
 public class LeaveApplication {
     private final String leaveType;
     private final String description;
     private final String toDate;
     private final String fromDate;
     private String numOfDays;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LeaveApplication that = (LeaveApplication) o;
+        return Objects.equals(leaveType, that.leaveType) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(toDate, that.toDate) &&
+                Objects.equals(fromDate, that.fromDate) &&
+                Objects.equals(numOfDays, that.numOfDays);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(leaveType, description, toDate, fromDate, numOfDays);
+    }
 
     private LeaveApplication(LeaveApplicationBuilder leaveApplicationBuilder) {
         this.leaveType = leaveApplicationBuilder.leaveType;

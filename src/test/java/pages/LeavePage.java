@@ -9,8 +9,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
-import utils.ReadAndWrite;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,12 +22,63 @@ public class LeavePage extends BasePage {
     private Scenario scenario ;
     private TestConfig testConfig;
 
-    final String elementFinderLocation = BasePage.ELEMENT_FILE_LOCATION;
+    final String configLocation = BasePage.CONFIG_LOCATION;
+    String leaveListPartialXpath = "//td[text()=";
+    String submitRequestXpath = "/parent::tr//input[@value='Submit']";
+
+    @FindBy(xpath = "//a[text()=\"Leaves\"]")
+    WebElement leave;
+
+    @FindBy(xpath = "//a[text()=\"New\"]")
+    WebElement newLeave;
+
+    @FindBy(id = "away_leave_type")
+    WebElement leaveType;
+
+    @FindBy(id = "away_description")
+    WebElement leaveDescription;
+
+    @FindBy(id = "away_num_of_days")
+    WebElement numOfDays;
+
+    @FindBy(xpath = "//input[@value=\"Create Away\"]")
+    WebElement createAway;
+
+    @FindBy(id = "year")
+    WebElement year;
+
+    @FindBy(id = "away_to_date")
+    WebElement toDate;
+
+    @FindBy(id = "away_from_date")
+    WebElement fromDate;
+
+    @FindBy(xpath = "//input[@value=\"Search\"]")
+    WebElement search;
+
+    @FindBy(xpath = "//dd[1]")
+    WebElement leaveTypePostForm;
+
+    @FindBy(xpath = "//dd[2]")
+    WebElement descriptionPostForm;
+
+    @FindBy(xpath = "//dd[3]")
+    WebElement fromDatePostForm;
+
+    @FindBy(xpath = "//dd[4]")
+    WebElement toDatePostForm;
+
+    @FindBy(xpath = "//dd[5]")
+    WebElement numOfDaysPostForm;
+
+    @FindBy(xpath = "//span[@class=\"glyphicon glyphicon-log-out\"]")
+    WebElement logout;
 
 
     public void setup( TestConfig testConfig) {
         this.testConfig = testConfig;
         this.driver = handleDriver(testConfig.getBrowser());
+        PageFactory.initElements(this.driver, this);
     }
 
     public WebDriver getDriver() {
@@ -34,7 +86,7 @@ public class LeavePage extends BasePage {
     }
 
     public String getLocation() {
-        return elementFinderLocation;
+        return configLocation;
     }
 
     public void setScenario(Scenario scenario) {
@@ -43,40 +95,30 @@ public class LeavePage extends BasePage {
 
     @Step("User is at leave page")
     public void userIsAtLeavePage() {
-        WebElement element = driver.findElement(By.xpath(
-                ReadAndWrite.getProperty("xpath-leave", elementFinderLocation)
-                ));
-        element.click();
+        leave.click();
     }
 
     @Step("User clicked on new button")
     public void userClicksOnNewLeaveButton() {
-
-        driver.findElement(
-                By.xpath(ReadAndWrite.getProperty("xpath-new", elementFinderLocation))
-        ).click();
+        newLeave.click();
     }
 
     @Step("User is filling up application form")
     public void UserFillUpApplicationForm(LeaveApplication leaveApplication) {
         int days = 0;
-        WebElement element = driver.findElement(
-                        By.id(ReadAndWrite.getProperty("id-leave-type", elementFinderLocation))
-                );
-        Select leaveTypeSelect = new Select(element);
+
+        Select leaveTypeSelect = new Select(leaveType);
         leaveTypeSelect.selectByValue(leaveApplication.getLeaveType());
 
-        element = driver.findElement(
-                By.id(ReadAndWrite.getProperty("id-leave-description", elementFinderLocation)));
-        element.sendKeys(leaveApplication.getDescription());
+        leaveDescription.sendKeys(leaveApplication.getDescription());
 
-        String idFromDate = ReadAndWrite.getProperty("id-from-date", elementFinderLocation);
-        String idToDate = ReadAndWrite.getProperty("id-to-date", elementFinderLocation);
+        String idFromDate = fromDate.getAttribute("id");
+        String idToDate = toDate.getAttribute("id");
         String from = leaveApplication.getFromDate();
         String to = leaveApplication.getToDate();
 
-        datePicker("id", idFromDate, idFromDate, from);
-        datePicker("id", idToDate, idToDate, to);
+        datePicker(fromDate, idFromDate, from);
+        datePicker(toDate, idToDate, to);
 
         try {
            days = getDays(from, to);
@@ -84,12 +126,11 @@ public class LeavePage extends BasePage {
             e.printStackTrace();
         }
 
-        element = driver.findElement(By.id(ReadAndWrite.getProperty("id-num-of-days", elementFinderLocation)));
-        Select daysSelection = new Select(element);
+        Select daysSelection = new Select(numOfDays);
 
         if(days > 15) {
             daysSelection.selectByValue("15");
-            leaveApplication.setNumOfDays("15");
+            leaveApplication.setNumOfDays("15.0");
         }
         else if(days == 0) {
             daysSelection.selectByIndex(days);
@@ -97,45 +138,46 @@ public class LeavePage extends BasePage {
         }
         else {
             daysSelection.selectByValue(String.valueOf(days));
-            leaveApplication.setNumOfDays(String.valueOf(days));
+            leaveApplication.setNumOfDays(days + ".0" );
         }
     }
 
     @Step("User clicks create button")
     public void clickSubmit() {
-        WebElement element = driver.findElement(By.xpath(ReadAndWrite.getProperty("xpath-create", elementFinderLocation)));
-        element.click();
+        createAway.click();
     }
 
     @Step("verifying application detail")
     public void verifyDetail(LeaveApplication leaveApplication) {
-        String leaveType = leaveApplication.getLeaveType();
-        WebElement element = driver.findElement(
-                By.xpath(ReadAndWrite.getProperty("xpath-leave-type", elementFinderLocation)));
-        Assert.assertEquals(leaveType.toLowerCase(), element.getText().toLowerCase());
+
+        LeaveApplication expectedLeave = new LeaveApplication.
+                LeaveApplicationBuilder(leaveTypePostForm.getText().trim(),
+                descriptionPostForm.getText().trim(),
+                toDatePostForm.getText().trim(),
+                fromDatePostForm.getText().trim()).
+                setNumOfDays(numOfDaysPostForm.getText().trim()).build();
+
+        Assert.assertEquals(expectedLeave, leaveApplication);
     }
 
     @Step ("submit application")
     public void submitApplication(LeaveApplication leaveApplication) {
-        WebElement element = driver.findElement(By.xpath(
-                ReadAndWrite.getProperty("xpath-leave", elementFinderLocation)
-        ));
-        element.click();
+        WebElement element;
+        leave.click();
         String type = leaveApplication.getLeaveType();
-        String submitXpath = ReadAndWrite.getProperty("xpath-leave-list-type", elementFinderLocation);
-        submitXpath = submitXpath + type + "\"]";
-        submitXpath = submitXpath + ReadAndWrite.getProperty("xpath-leave-list-submit", elementFinderLocation);
+        String submitXpath = leaveListPartialXpath  + "\"" + type + "\"" + "]";
+        submitXpath = submitXpath + submitRequestXpath;
 
         try {
             element = driver.findElement(By.xpath(submitXpath));
+
         } catch (Exception noSuchElementException) {
+
+            Select yearSelector = new Select(year);
             String year = leaveApplication.getFromDate();
             year = year.split("/")[2];
-            element = driver.findElement(By.id("year"));
-            Select yearSelector = new Select(element);
             yearSelector.selectByValue(year);
-            element = driver.findElement(By.xpath("//input[@value=\"Search\"]"));
-            element.click();
+            search.click();
             element = driver.findElement(By.xpath(submitXpath));
 
         }
@@ -145,31 +187,14 @@ public class LeavePage extends BasePage {
 
     @Step("User log out")
     public void logout() {
-        WebElement element = driver.findElement(By.xpath(ReadAndWrite.getProperty("xpath-logout", elementFinderLocation)));
-        element.click();
+        logout.click();
     }
 
-
-    private void datePicker(String identifier, String identifierValue, String selectorId,  String date) {
+    private void datePicker(WebElement element, String selectorId,  String date) {
 
         ((JavascriptExecutor) driver).
                 executeScript("document.getElementById('"+selectorId+"')." +
                         "removeAttribute('readonly');");
-
-        WebElement element;
-
-        switch (identifier) {
-            case "id" : {
-                element = driver.findElement(By.id(identifierValue));
-                break;
-            }
-            case "xpath" : {
-                element = driver.findElement(By.xpath(identifierValue));
-                break;
-            }
-            default:
-                throw new IllegalStateException("Unexpected value: " + identifier);
-        }
 
         element.clear();
         element.sendKeys(date);

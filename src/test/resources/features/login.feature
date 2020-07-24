@@ -1,8 +1,8 @@
 Feature: Login feature
   Background:
     Given Login Test Initialization
-      |browser|url|
-      |firefox|http://kaala.herokuapp.com/users/sign_in|
+      |browser|
+      |chrome|
   Scenario: Login Registered Employee
     Given Employee is on login page
     When Employee tries logging in

@@ -8,7 +8,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 public class BasePage {
     public static WebDriver driver = null;
     private final String basePath = System.getProperty("user.dir") + "\\src\\test\\resources\\drivers\\";
-    public final static String ELEMENT_FILE_LOCATION = System.getProperty("user.dir") + "\\src\\test\\resources\\" + "elementFinder.properties";
+    public final static String CONFIG_LOCATION = System.getProperty("user.dir") + "\\src\\test\\resources\\" + "config.properties";
 
     private final static String FIREFOX_DRIVER = "geckodriver-v0.26.0-win64\\geckodriver.exe";
     private final static String CHROME_DRIVER = "chromedriver_win32\\chromedriver.exe";

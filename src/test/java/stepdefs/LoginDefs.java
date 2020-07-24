@@ -9,10 +9,11 @@ import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import pages.BasePage;
 import pages.LoginPage;
+import utils.ReadAndWrite;
 
 import java.util.List;
-import java.util.Map;
 
 public class LoginDefs {
     LoginPage loginPage = new LoginPage();
@@ -27,7 +28,8 @@ public class LoginDefs {
     @Given("Login Test Initialization")
     public void login_test_initialization(DataTable dataTable) {
         List<String> data = dataTable.cells().get(1);
-        testConfig = new TestConfig.TestConfigBuilder(data.get(0), data.get(1)).build();
+        String url = ReadAndWrite.getProperty("url", BasePage.CONFIG_LOCATION);
+        testConfig = new TestConfig.TestConfigBuilder(data.get(0), url).build();
         loginPage.setup(testConfig);
     }
 

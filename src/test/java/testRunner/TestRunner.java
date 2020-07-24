@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import pages.BasePage;
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features = {"classpath:features"},
+@CucumberOptions(features = {"classpath:features/login.feature"},
     glue = {"stepdefs", "stepdefs/"})
 public class TestRunner {
 

@@ -7,6 +7,8 @@ import io.qameta.allure.Attachment;
 import io.qameta.allure.Step;
 import org.junit.Assert;
 import org.openqa.selenium.*;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import utils.ReadAndWrite;
 
 public class LoginPage extends BasePage {
@@ -14,11 +16,35 @@ public class LoginPage extends BasePage {
     public Scenario scenario;
     private TestConfig testConfig;
 
-    final String elementFinderLocation = BasePage.ELEMENT_FILE_LOCATION;
+    @FindBy(id = "user_email")
+    WebElement email;
+
+    @FindBy(id = "user_password")
+    WebElement password;
+
+    @FindBy(xpath = "//input[@type =\"submit\"]")
+    WebElement submit;
+
+    @FindBy(xpath = "//h1[contains(@class, Name)]")
+    WebElement name;
+
+    @FindBy(xpath = "//span[@class=\"glyphicon glyphicon-log-out\"]")
+    WebElement logout;
+
+    public LoginPage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(this.driver, this);
+    }
+
+    public LoginPage() {
+    }
+
+    final String configLocation = BasePage.CONFIG_LOCATION;
 
     public void setup(TestConfig testConfig) {
         this.testConfig = testConfig;
         driver = handleDriver(testConfig.getBrowser());
+        PageFactory.initElements(this.driver, this);
     }
 
     public void setDriver(WebDriver driver) {
@@ -26,7 +52,7 @@ public class LoginPage extends BasePage {
     }
 
     public String getLocation() {
-        return this.elementFinderLocation;
+        return this.configLocation;
     }
 
     public void setTestConfig(TestConfig testConfig) {
@@ -45,14 +71,9 @@ public class LoginPage extends BasePage {
 
     @Step("User is logging in with credentials")
     public void userLoggingWithCreds(Employee employee) {
-        WebElement element = driver.findElement(By.id("user_email"));
-        element.sendKeys(employee.getEmail());
-
-        element = driver.findElement(By.id("user_password"));
-        element.sendKeys(employee.getPassword());
-
-        element = driver.findElement(By.xpath("//input[@type =\"submit\"]"));
-        element.click();
+        email.sendKeys(employee.getEmail());
+        password.sendKeys(employee.getPassword());
+        submit.click();
     }
 
     @Step("Post login page")
@@ -63,7 +84,7 @@ public class LoginPage extends BasePage {
 
     @Step("User is logged in")
     public void userGetsLoggedIn(Employee employee) {
-        String firstName = driver.findElement(By.xpath("//h1[contains(@class, Name)]")).getText().trim().split(" ")[0];
+        String firstName = name.getText().trim().split(" ")[0];
         boolean isLoggedIn = employee.getEmail().toLowerCase().contains(firstName.toLowerCase());
         Assert.assertTrue(isLoggedIn);
     }
@@ -75,7 +96,6 @@ public class LoginPage extends BasePage {
 
     @Step("User logs out")
     public void logout() {
-        WebElement element = driver.findElement(By.xpath(ReadAndWrite.getProperty("xpath-logout", elementFinderLocation)));
-        element.click();
+        logout.click();
     }
 }
